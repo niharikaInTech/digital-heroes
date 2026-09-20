@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply bg-ink text-cream font-sans antialiased; }
+  h1, h2, h3 { @apply tracking-tight; }
+  :focus-visible { @apply outline outline-2 outline-offset-2 outline-sage; }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium
+           transition duration-200 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary { @apply bg-sage text-ink hover:bg-cream; }
+  .btn-copper  { @apply bg-copper text-ink hover:bg-cream; }
+  .btn-ghost   { @apply border border-cream/25 text-cream hover:border-cream/70; }
+  .btn-danger  { @apply border border-red-400/40 text-red-300 hover:border-red-300; }
+
+  .panel { @apply rounded-2xl border border-cream/10 bg-forest/40 p-6; }
+  .field {
+    @apply w-full rounded-lg border border-cream/20 bg-ink px-3 py-2 text-cream
+           placeholder:text-cream/40 focus:border-sage;
+  }
+  .label { @apply mb-1 block text-sm text-cream/70; }
+  .muted { @apply text-cream/65; }
+  .error { @apply rounded-lg border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm text-red-200; }
+  .success { @apply rounded-lg border border-sage/50 bg-sage/10 px-3 py-2 text-sm text-sage; }
+
+  .badge { @apply inline-block rounded-full px-2.5 py-0.5 text-xs font-medium; }
+  .badge-green  { @apply bg-sage/20 text-sage; }
+  .badge-copper { @apply bg-copper/20 text-copper; }
+  .badge-grey   { @apply bg-cream/10 text-cream/70; }
+  .badge-red    { @apply bg-red-500/15 text-red-300; }
+
+  .table-wrap { @apply overflow-x-auto rounded-2xl border border-cream/10; }
+  .table { @apply w-full min-w-[640px] text-left text-sm; }
+  .table th { @apply bg-forest/60 px-4 py-3 font-medium text-cream/70; }
+  .table td { @apply border-t border-cream/10 px-4 py-3 align-top; }
+}
+
+/* One orchestrated entrance on the homepage hero. Nothing else auto-animates. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+.rise { animation: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none; }
+  * { transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
