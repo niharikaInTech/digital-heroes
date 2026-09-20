@@ -31,14 +31,17 @@ export async function middleware(request) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isPrivate = ['/dashboard', '/admin', '/subscribe'].some((p) =>
-    path.startsWith(p)
-  );
+  const isAdminArea = path === '/admin' || path.startsWith('/admin/');
+  const isAdminLogin = path === '/admin/login';
+  const isPrivate =
+    ['/dashboard', '/subscribe'].some((p) => path.startsWith(p)) ||
+    (isAdminArea && !isAdminLogin);
 
   if (!user && isPrivate) {
     const url = request.nextUrl.clone();
-    url.pathname = '/login';
-    url.search = `?next=${encodeURIComponent(path)}`;
+    // the admin area sends logged-out visitors to its own login page
+    url.pathname = isAdminArea ? '/admin/login' : '/login';
+    url.search = isAdminArea ? '' : `?next=${encodeURIComponent(path)}`;
     return NextResponse.redirect(url);
   }
 

@@ -9,6 +9,7 @@ export default function Footer() {
           <Link href="/charities" className="hover:text-cream">Charities</Link>
           <Link href="/signup" className="hover:text-cream">Subscribe</Link>
           <Link href="/login" className="hover:text-cream">Log in</Link>
+          <Link href="/admin/login" className="hover:text-cream">Admin</Link>
         </div>
       </div>
     </footer>

@@ -2,6 +2,7 @@ import { Space_Grotesk, Instrument_Serif } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import SiteChrome from '@/components/SiteChrome';
 
 const sans = Space_Grotesk({ subsets: ['latin'], variable: '--font-sans' });
 const serif = Instrument_Serif({
@@ -21,9 +22,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body className="flex min-h-screen flex-col">
-        <Navbar />
+        <SiteChrome><Navbar /></SiteChrome>
         <main className="flex-1">{children}</main>
-        <Footer />
+        <SiteChrome><Footer /></SiteChrome>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@ import { startCheckout } from '@/app/actions/billing';
 import { PLANS, monthlyFee } from '@/lib/config';
 import { inr } from '@/lib/format';
 import Link from 'next/link';
+import { isDemoPayments } from '@/lib/payments';
 
 export const metadata = { title: 'Choose a plan - Digital Heroes' };
 
@@ -24,6 +25,10 @@ export default async function SubscribePage({ searchParams }) {
           ? `${profile.charity_percent}% of your fee goes to ${profile.charities.name}.`
           : 'Pick a charity from your dashboard after subscribing.'}
       </p>
+
+      {isDemoPayments() && (
+        <p className="success mt-6" role="status">Demo checkout: no card is needed and no money is charged.</p>
+      )}
 
       {searchParams?.error && (
         <p className="error mt-6" role="alert">That plan isn't available yet. Check the Stripe price IDs in your environment variables.</p>
@@ -51,7 +56,11 @@ export default async function SubscribePage({ searchParams }) {
           ))}
         </div>
       )}
-      <p className="muted mt-6 text-xs">Payments are handled securely by Stripe. We never see your card details.</p>
+      <p className="muted mt-6 text-xs">
+        {isDemoPayments()
+          ? 'This is a demo. Choosing a plan takes you to a practice checkout.'
+          : 'Payments are handled securely by Stripe. We never see your card details.'}
+      </p>
     </div>
   );
 }

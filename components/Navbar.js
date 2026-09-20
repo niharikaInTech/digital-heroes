@@ -16,11 +16,13 @@ export default async function Navbar() {
           <Link href="/charities" className="hover:text-sage">Charities</Link>
           <Link href="/#how" className="hidden hover:text-sage sm:inline">How it works</Link>
           {profile?.role === 'admin' && (
-            <Link href="/admin" className="text-copper hover:text-cream">Admin</Link>
+            <Link href="/admin" className="text-copper hover:text-cream">Admin panel</Link>
           )}
           {user ? (
             <>
-              <Link href="/dashboard" className="hover:text-sage">Dashboard</Link>
+              {profile?.role !== 'admin' && (
+                <Link href="/dashboard" className="hover:text-sage">Dashboard</Link>
+              )}
               <form action={signOut}>
                 <button className="btn btn-ghost !px-4 !py-1.5">Sign out</button>
               </form>

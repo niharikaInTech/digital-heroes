@@ -81,7 +81,7 @@ export default function AuthForm({ mode, action, charities = [], next = '' }) {
       {state?.error && <p className="error" role="alert">{state.error}</p>}
       {state?.message && <p className="success" role="status">{state.message}</p>}
 
-      <Submit>{isSignup ? 'Create account' : 'Log in'}</Submit>
+      <Submit>{isSignup ? 'Create account' : mode === 'admin' ? 'Sign in to admin' : 'Log in'}</Submit>
     </form>
   );
 }

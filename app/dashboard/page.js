@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { requireUser, isActive } from '@/lib/auth';
 import { addScore, updateScore, deleteScore, saveCharity, uploadProof } from './actions';
@@ -7,6 +8,7 @@ import { AddScoreForm, ScoreList } from '@/components/dashboard/ScoreManager';
 import CharityPicker from '@/components/dashboard/CharityPicker';
 import ProofForm from '@/components/dashboard/ProofForm';
 import { PLANS } from '@/lib/config';
+import { isDemoPayments } from '@/lib/payments';
 import { fmtDate, fmtMonth, inr } from '@/lib/format';
 
 export const metadata = { title: 'Dashboard - Digital Heroes' };
@@ -20,6 +22,7 @@ const VERIFY_LABEL = {
 
 export default async function Dashboard({ searchParams }) {
   const { user, profile } = await requireUser();
+  if (profile.role === 'admin') redirect('/admin'); // admins use /admin, not the subscriber dashboard
   const supabase = createClient();
   const active = isActive(profile); // checked fresh on every request
 
@@ -126,9 +129,11 @@ export default async function Dashboard({ searchParams }) {
               <div className="flex justify-between"><dt className="muted">Plan</dt><dd>{profile.plan ? PLANS[profile.plan].label : '-'}</dd></div>
               <div className="flex justify-between"><dt className="muted">{active ? 'Renews on' : 'Ended on'}</dt><dd>{fmtDate(profile.current_period_end)}</dd></div>
             </dl>
-            {profile.stripe_customer_id ? (
+            {profile.stripe_customer_id || (active && isDemoPayments()) ? (
               <form action={openBillingPortal}>
-                <button className="btn btn-ghost mt-5 w-full">Manage or cancel plan</button>
+                <button className="btn btn-ghost mt-5 w-full">
+                  {isDemoPayments() ? 'Cancel plan (demo)' : 'Manage or cancel plan'}
+                </button>
               </form>
             ) : (
               <Link href="/subscribe" className="btn btn-primary mt-5 w-full">Choose a plan</Link>

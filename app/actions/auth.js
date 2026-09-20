@@ -15,10 +15,44 @@ export async function signIn(prev, formData) {
   if (!email || !password) return { error: 'Enter your email and password.' };
 
   const supabase = createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: 'Email or password is incorrect.' };
 
+  // Admins have their own login page. Keep the two areas separate.
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', data.user.id)
+    .single();
+  if (profile?.role === 'admin') {
+    await supabase.auth.signOut();
+    return { error: 'This is an admin account. Please sign in on the admin login page (/admin/login).' };
+  }
+
   redirect(safePath(formData.get('next')));
+}
+
+// Separate login for administrators. Non-admin accounts are refused.
+export async function adminSignIn(prev, formData) {
+  const email = String(formData.get('email') || '').trim();
+  const password = String(formData.get('password') || '');
+  if (!email || !password) return { error: 'Enter your email and password.' };
+
+  const supabase = createClient();
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) return { error: 'Email or password is incorrect.' };
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', data.user.id)
+    .single();
+  if (profile?.role !== 'admin') {
+    await supabase.auth.signOut();
+    return { error: 'This account does not have admin access.' };
+  }
+
+  redirect('/admin');
 }
 
 export async function signUp(prev, formData) {
@@ -48,6 +82,12 @@ export async function signUp(prev, formData) {
     return { message: 'Check your inbox and confirm your email, then log in.' };
   }
   redirect('/subscribe');
+}
+
+export async function adminSignOut() {
+  const supabase = createClient();
+  await supabase.auth.signOut();
+  redirect('/admin/login');
 }
 
 export async function signOut() {

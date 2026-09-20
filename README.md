@@ -27,7 +27,7 @@ npm test                        # unit tests for the draw engine
    update profiles set role = 'admin' where email = 'you@example.com';
    ```
 
-### Stripe (test mode)
+### Stripe (optional, only if USE_STRIPE=true)
 1. Dashboard > **Product catalogue**: create a product "Monthly" (recurring, monthly, 999 INR) and "Yearly" (recurring, yearly, 9999 INR). Copy each **Price ID** (`price_...`) into `STRIPE_PRICE_MONTHLY` / `STRIPE_PRICE_YEARLY`.
    (If your Stripe account can't charge in INR, change the currency there and the `inr()` helper in `lib/format.js`.)
 2. Copy the secret key into `STRIPE_SECRET_KEY`.
@@ -38,6 +38,22 @@ npm test                        # unit tests for the draw engine
    ```
    Copy the `whsec_...` it prints into `STRIPE_WEBHOOK_SECRET`.
 5. Test card: `4242 4242 4242 4242`, any future date, any CVC.
+
+### Payments (demo by default, Stripe optional)
+Out of the box the app uses **demo payments**, so no Stripe account or extra variable is needed. Choosing a plan opens a demo
+checkout page (`/subscribe/checkout`), and paying there activates the plan and shows a "Payment successful" page
+(`/subscribe/success`). No card is asked for and no money moves. The dashboard's cancel button and the charity donation form
+also work in demo mode.
+
+The full Stripe integration (checkout, webhook, customer portal) is still in the code. To switch to it, set `USE_STRIPE=true`
+and add the Stripe test keys and price IDs from the section above. Never run demo mode for real customers: anyone could
+activate a plan for free.
+
+### Admin access
+There is no default admin. Sign up (or create a user in Supabase > Authentication), then run
+`update profiles set role = 'admin' where email = 'you@example.com';`. Admins sign in on their own page, **`/admin/login`**,
+and get a separate admin console (sidebar layout, no public navbar). The normal `/login` refuses admin accounts, and
+`/admin/login` refuses everyone who isn't an admin. Admins can't use the subscriber dashboard.
 
 ### Deploy (PRD 15.1: new Vercel account, new Supabase project)
 1. Push to GitHub, import the repo in the new Vercel account.
@@ -61,7 +77,7 @@ npm test                        # unit tests for the draw engine
 | 08 Charity system | `app/charities/*`, `components/CharityPicker`, `app/actions/billing.js` (`donate`) |
 | 09 Winner verification | `components/dashboard/ProofForm.js`, `app/admin/winners/page.js`, `app/admin/actions.js` |
 | 10 User dashboard | `app/dashboard/page.js` |
-| 11 Admin dashboard | `app/admin/*` |
+| 11 Admin dashboard | `app/admin/(panel)/*` (pages), `app/admin/login` (admin login) |
 | 12 UI / UX | `app/globals.css`, `tailwind.config.js`, `app/page.js`, `components/SplitDemo.js` |
 
 ## 3. How the important parts work (good for your viva)
